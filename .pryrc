@@ -1,0 +1,2 @@
+# enable Hirb
+Hirb.enable
