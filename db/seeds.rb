@@ -23,18 +23,43 @@ module Seeder
       end
     end
 
-    def generate_credit_cards(owners)
+    def generate_credit_cards_for(owners)
       number_of_owners = owners.length
-      (number_of_owners/ (random_number(2, 1))).times do
-        owner = owners.sample
+      random_number(min: (number_of_owners / 3),
+                    max: number_of_owners).times do
+        credit_card_for(owners.sample)
+      end
+    end
+
+    def generate_countries(n)
+      n.times { Country.create(name: country_name) }
+    end
+
+    def generate_addresses_for(owners)
+      owners.each do |owner|
+        address_for(owner)
+      end
+    end
+
+    private
+
+      def credit_card_for(owner)
         CreditCard.create(user_id: owner.id,
                           expiration_date: fake_expiry_date,
                           name: owner.name,
                           number: fake_credit_card_number)
       end
-    end
 
-    private
+      def address_for(owner)
+        Address.create(user_id: owner.id,
+                       country_id:,
+                       state_id:,
+                       city:,
+                       zip_code:,
+                       street:,
+                       default:,
+                       type: )
+      end
 
       def fake_name
         Faker::Name.name
@@ -56,8 +81,12 @@ module Seeder
         Faker::Business.credit_card_number
       end
 
-      def random_number(max, min = 0)
-        Random.new.rand(max) + min
+      def random_number(min: 0, max:)
+        Random.new.rand(min..max)
       end
+
   end
 end
+
+Seeder.generate_users(50)
+Seeder.generate_credit_cards(User.all)
